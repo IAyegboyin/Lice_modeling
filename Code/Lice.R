@@ -1,10 +1,16 @@
+#Introduction----
+#25-05-2025
+#I am working on this small lice data, just to keep improving my linear modeling practice
+
+#Libraries----
 require(tidyverse)
 require(readxl)
 library(emmeans)
 library(performance)
-#library(MASS)
+library(MASS)
 
-lice <- read_excel("C:\\Users\\DELL\\Documents\\Git in R\\Ticks\\Data\\Lice.xlsx",
+#Load Data----
+lice <- read_excel("/Users/aia/Desktop/Data Science Library/Data for play/Lice_modeling/Data/Lice.xlsx",
                    sheet = "workingsheet")
 view(lice)
 
@@ -19,13 +25,13 @@ dplyr::select(-Data_collector) %>%
             across(where(is.numeric), sum))%>% 
   as.data.frame()
 
-      #       ----------- Menacanthis_straminus-------------------
+#       Menacanthis_straminus-------------------
 M.straminus.model <- glm(Menacanthis_straminus ~ Location, data = lice, 
                          family =  quasipoisson(link = "log"))
 summary(M.straminus.model)
 check_overdispersion(M.straminus.model)
 emmeans(M.straminus.model, pairwise ~ Location,
-                           adjust = "Tukey")
+        adjust = "Tukey")
 
 check_model(M.straminus.model)
 check_homogeneity(M.straminus.model)
@@ -36,7 +42,7 @@ model_performance(M.straminus.model)
 
 M.galinae.quasi <- glm(Menopon_galinae ~ Location, data = lice, 
                        family = quasipoisson(link = "log")
-                         )
+)
 summary(M.galinae.quasi)
 check_overdispersion(M.galinae.quasi)
 emmeans(M.galinae.quasi, pairwise ~ Location,
@@ -51,7 +57,7 @@ lice %>%
   dplyr::select(-Data_collector) %>% 
   mutate(prev_M.straminus = ifelse(Menacanthis_straminus>0, 1, 0),
          prev_Menopon_galinae = ifelse(Menopon_galinae>0, 1, 0)) %>%
- dplyr::select(-Menacanthis_straminus,-Menopon_galinae) %>% 
+  dplyr::select(-Menacanthis_straminus,-Menopon_galinae) %>% 
   group_by(Location) %>% 
   summarise(across(where(is.numeric), sum)) %>% 
   mutate(prev_M.straminus= prev_M.straminus*2, #prevalence=(count(lice present)/50)*100
@@ -62,4 +68,5 @@ lice %>%
 
 citation("emmeans")
 citation("performance")
+
 
