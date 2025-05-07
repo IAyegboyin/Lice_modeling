@@ -1,5 +1,6 @@
 #Introduction----
-#25-05-2025
+#This work is still in progress .....
+#07-05-2025 
 #I am working on this small lice data, just to keep improving my linear modeling practice
 
 #Libraries----
@@ -28,32 +29,51 @@ dplyr::select(-Data_collector) %>%
 
 #Checking for normality of data----
 #Menacanthis.straminus data check is here
+#qqplot
 qqnorm(lice$Menacanthis_straminus)
 qqline(lice$Menacanthis_straminus)
-
-
+#shapiro-wilk test
+shapiro.test(lice$Menacanthis_straminus)
 #Menacanthis.straminus data check ends here
 
 #Menopon.galinae data check starts here
+#qqplot
 qqnorm(lice$Menopon_galinae)
 qqline(lice$Menopon_galinae)
+#shapiro-wilk test
+shapiro.test(lice$Menopon_galinae)
 #Menopon.galinae data check ends here
 
 #Model Building----
 # Model Building for Menacanthis straminus
 
-M.straminus.model <- glm(Menacanthis_straminus ~ Location, data = lice, 
+M.straminus.model1 <- glm(Menacanthis_straminus ~ Location, data = lice, 
                          family =  quasipoisson(link = "log"))
-summary(M.straminus.model)
+summary(M.straminus.model1)
 
-check_overdispersion(M.straminus.model)
-emmeans(M.straminus.model, pairwise ~ Location,
+check_model(M.straminus.model1)
+check_overdispersion(M.straminus.model1)
+emmeans(M.straminus.model1, pairwise ~ Location,
         adjust = "Tukey")
+model_performance(M.straminus.model1)
 
-check_model(M.straminus.model)
-check_homogeneity(M.straminus.model)
-model_performance(M.straminus.model)
 
+M.straminus.model2 <- glm(Menacanthis_straminus ~ Location, data = lice, 
+                          family =  quasipoisson(link = "identity"))
+check_model(M.straminus.model2)
+check_overdispersion(M.straminus.model2)
+emmeans(M.straminus.model2, pairwise ~ Location,
+        adjust = "Tukey")
+model_performance(M.straminus.model2)
+
+M.straminus.model3 <- glm.nb(Menacanthis_straminus ~ Location, data = lice)
+summary(M.straminus.model3)
+
+check_model(M.straminus.model3)
+check_overdispersion(M.straminus.model3)
+emmeans(M.straminus.model3, pairwise ~ Location,
+        adjust = "Tukey")
+model_performance(M.straminus.model3)
 
 #       ----------- Menopon_galinae-------------------
 
