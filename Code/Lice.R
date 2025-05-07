@@ -14,6 +14,7 @@ lice <- read_excel("/Users/aia/Desktop/Data Science Library/Data for play/Lice_m
                    sheet = "workingsheet")
 view(lice)
 
+#Data manipulation and Descriptive Statistics----
 lice %>% 
 dplyr::select(-Data_collector) %>% 
   group_by(Location) %>% 
@@ -25,10 +26,26 @@ dplyr::select(-Data_collector) %>%
             across(where(is.numeric), sum))%>% 
   as.data.frame()
 
-#       Menacanthis_straminus-------------------
+#Checking for normality of data----
+#Menacanthis.straminus data check is here
+qqnorm(lice$Menacanthis_straminus)
+qqline(lice$Menacanthis_straminus)
+
+
+#Menacanthis.straminus data check ends here
+
+#Menopon.galinae data check starts here
+qqnorm(lice$Menopon_galinae)
+qqline(lice$Menopon_galinae)
+#Menopon.galinae data check ends here
+
+#Model Building----
+# Model Building for Menacanthis straminus
+
 M.straminus.model <- glm(Menacanthis_straminus ~ Location, data = lice, 
                          family =  quasipoisson(link = "log"))
 summary(M.straminus.model)
+
 check_overdispersion(M.straminus.model)
 emmeans(M.straminus.model, pairwise ~ Location,
         adjust = "Tukey")
